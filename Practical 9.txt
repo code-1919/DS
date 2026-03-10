@@ -1,0 +1,61 @@
+Practical 9 :
+
+AIM: Principal Component Analysis (PCA)
+• Perform PCA on a dataset to reduce dimensionality.
+• Evaluate the explained variance and select the appropriate number of principal
+components.
+• Visualize the data in the reduced-dimensional space
+
+code :
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import os
+
+df = pd.read_csv("iris.csv")
+print(df.head())
+x = df.drop(['variety'],axis = 1)
+y = df.variety.replace({'Setosa' : 1 , 'Versicolor' : 2 , 'Virginica' : 3})
+print(x.head())
+
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+x = scaler.fit_transform(x)
+
+scaled_data = pd.DataFrame(x)
+sns.heatmap(scaled_data.corr())
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train , y_test = train_test_split(x,y,test_size = 0.3 , random_state = 20 , stratify = y)
+knn = KNeighborsClassifier(7)
+knn.fit(x_train , y_train)
+print("Train score before PCA" , knn.score(x_train , y_train) , "%")
+print("Train score before PCA" , knn.score(x_test , y_test) , "%")
+
+pca = PCA()
+x_new = pca.fit_transform(x)
+print(pca.get_covariance())
+explained_variance = pca.explained_variance_ratio_
+print(explained_variance)
+
+plt.figure(figsize = (6 , 4))
+
+plt.bar(range(4),explained_variance, alpha = 0.5, align = 'center' , label = "individual explained variance")
+plt.ylabel('Explained variance ratio')
+plt.legend(loc = 'best')
+plt.tight_layout()
+plt.show()
+
+pca = PCA(n_components = 3)
+x_new = pca.fit_transform(x)
+plt.scatter(x_new[:, 0] , x_new[:, 1] , c = y)
+plt.show()
+
+x_train_new, x_test_new, y_train , y_test = train_test_split(x_new,y,test_size = 0.3 , random_state = 20 , stratify = y)
+knn_pca = KNeighborsClassifier(7)
+knn_pca.fit(x_train_new , y_train)
+print("Train score after PCA" , knn_pca.score(x_train_new , y_train) , "%")
+print("Train score after PCA" , knn_pca.score(x_test_new , y_test) , "%")
