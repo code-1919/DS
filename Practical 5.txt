@@ -1,0 +1,58 @@
+Practical 5
+
+AIM: ANOVA (Analysis of Variance)
+A. Perform one-way ANOVA to compare means across multiple groups.
+B. Conduct post-hoc tests to identify significant differences between groups.
+Code.
+
+// if you got b you want to first perform A then b
+
+A. Perform one-way ANOVA to compare means across multiple groups :
+
+
+import numpy as np
+import pandas as pd
+from scipy import stats
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+#
+group_A = [85,88,90,92,86]
+group_B = [78,82,80,79,81]
+group_C = [90,92,94,91,93]
+
+#
+f_statistic,p_value = stats.f_oneway(group_A,group_B,group_C)
+
+#
+print("F-Statistic:",f_statistic)
+print("p-value:",p_value)
+
+#
+if p_value < 0.05:
+    print("Result:Significant difference between group means")
+else:
+    print("Result: no significant difference btw group menas")
+
+B. Conduct post-hoc tests to identify significant differences between groups.
+Code:
+
+#2nd part
+scores = group_A + group_B + group_C
+
+#
+groups = (['Group A']*len(group_A) + ['Group B']*len(group_B) + ['Group C']*len(group_C))
+
+#
+data = pd.DataFrame({'Score':scores,'Group':groups})
+print(data)
+
+#
+tukey_test = pairwise_tukeyhsd(
+    endog=data['Score'],
+    groups=data['Group'],
+    alpha=0.05
+)
+print(tukey_test)
+
+
+
