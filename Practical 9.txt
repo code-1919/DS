@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import os
 
 #
-df = pd.read_csv("iris.csv")
+df = pd.read_csv("iris.csv") // change csv file according to paper 
 print(df.head())
 x = df.drop(['variety'],axis = 1)
 y = df.variety.replace({'Setosa' : 1 , 'Versicolor' : 2 , 'Virginica' : 3})
@@ -64,3 +64,4 @@ knn_pca = KNeighborsClassifier(7)
 knn_pca.fit(x_train_new , y_train)
 print("Train score after PCA" , knn_pca.score(x_train_new , y_train) , "%")
 print("Train score after PCA" , knn_pca.score(x_test_new , y_test) , "%")
+
