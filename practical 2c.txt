@@ -1,5 +1,7 @@
 practical 2c
 
+AIM : Read data from CSV and JSON files into a data frame. (and 3 operation filter , sort in assending ...)
+
 import pandas as pd
 
 #
@@ -25,4 +27,5 @@ print(grouped_data.first())
 df.groupby('Make')['Sell Price'].max()
 
 #
+
 df.groupby('Make')['Sell Price'].sum()
