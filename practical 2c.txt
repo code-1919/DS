@@ -1,0 +1,28 @@
+practical 2c
+
+import pandas as pd
+
+#
+df = pd.read_csv("book.csv")
+df.head()
+
+#
+car = df[df['Sell Price'] > 4000]
+car.head()
+
+#
+sortedcar = car.sort_values(by="Sell Price", ascending=True)
+print(sortedcar)
+
+#
+grouped_data = df.groupby('Make')
+print(grouped_data)
+
+#
+print(grouped_data.first())
+
+#
+df.groupby('Make')['Sell Price'].max()
+
+#
+df.groupby('Make')['Sell Price'].sum()
