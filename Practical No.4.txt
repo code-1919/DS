@@ -1,0 +1,104 @@
+Practical No.4
+AIM: Hypothesis Testing
+• Formulate null and alternative hypotheses for a given problem.
+• Conduct a hypothesis test using appropriate statistical tests (e.g., t-test, chi-square
+test).
+• Interpret the results and draw conclusions based on the test outcomes.
+
+code :
+
+import pandas as pd
+from scipy import stats
+import numpy as np
+
+#
+
+
+#Hypothesis testing one sample of t test
+# A marks dataset of 30 students
+#H0 : Mean = 65
+#H1 : Mean != 65
+np.random.seed(10)
+marks = np.random.normal(loc = 68 , scale = 10 , size = 30) #mean = 68
+df = pd.DataFrame({'Marks': marks})
+
+print("Sample Data (First 5 rows):")
+print(df.head(), "\n")
+
+#
+popmean = 65 # hypothesized mean
+t_stat , p_value = stats.ttest_1samp(df['Marks'], popmean)
+print(f"Calculated t-statistics = {t_stat:.4f}")
+print(f"P-value = {p_value:.4f}")
+
+#
+alpha = 0.05
+if p_value < alpha:
+    print("Conclusion : Reject H0")
+    print("There is significant evidence that the mean is NOT equal to 65.\n")
+else:
+    print("Conclusion : Fail to Reject H0")
+    print("There is not enough evidence to say that the mean is different from 65.\n")
+
+#
+np.random.seed(42)
+study_hours = np.random.normal(loc = 5 , scale = 1.5 , size = 40) #feature 1
+marks = np.random.normal(loc = 65 , scale = 12 , size = 40) #feature 2
+
+passed = ["Yes" if m >= 60 else "No" for m in marks]
+df = pd.DataFrame({
+    'StudyHours': study_hours,
+    'Marks': marks,
+    'Passed': passed
+})
+
+print("Datasets (First 8 rows)")
+print(df.head(8), "\n")
+
+#
+group_pass = df[df["Passed"] == "Yes"]["Marks"]
+group_fail = df[df["Passed"] == "No"]["Marks"]
+
+#
+t_stat,p_value = stats.ttest_ind(group_pass,group_fail, equal_var = False)
+
+print("------T-Test: Marks Vs Passed ------")
+print(f"Mean Marks (Passed): {group_pass.mean():.2f}")
+print(f"Mean Marks (Failed): {group_fail.mean():.2f}")
+print(f"T-statistics: {t_stat:.4f}")
+print(f"P_value : {p_value:.4f}")
+
+#
+if p_value < alpha:
+    print("Conclusion : Reject H0")
+    print("There is significant is an difference in average marks.\n")
+else:
+    print("Conclusion : Fail to Reject H0")
+
+    print("No significant difference in average marks.\n")
+
+#
+df["StudyCategory"] = ["High" if h > 5 else "Low" for h in df["StudyHours"]]
+table = pd.crosstab(df["StudyCategory"],df["Passed"])
+
+print("Contingency Table: ")
+print(table, "\n")
+
+#
+chi2 , p , dof , expected = stats.chi2_contingency(table)
+
+print("------Chi- square Test: Marks Vs Passed ------")
+print(f"Chi-square Value: {chi2:.4f}")
+print(f"P_value : {p:.4f}")
+print(f"Degrees of freedom : {dof}\n")
+
+print("Expected Frequencies: ")
+print(pd.DataFrame(expected , index = table.index , columns = table.columns), "\n")
+
+if p < alpha:
+    print("Conclusion : Reject H0")
+    print("Study time and Passing Are Statistically related")
+else:
+    print("Conclusion : Fail to Reject H0")
+
+    print("Study time and Passing Are Not Statistically related")
