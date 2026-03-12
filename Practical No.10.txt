@@ -1,0 +1,127 @@
+Practical No.10
+AIM: Data Visualization and Storytelling
+• Create meaningful visualizations using data visualization tools
+• Combine multiple visualizations to tell a compelling data story.
+• Present the findings and insights in a clear and concise manner
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+%matplotlib inline
+from matplotlib import rcParams
+
+%config InlineBackend.figure_format = 'retina'
+sns.set_style("white")
+rcParams['figure.figsize'] = rcParams['figure.figsize'] = 6,4
+import matplotlib.ticker as ticker
+import os
+from IPython.display import Image
+import warnings
+warnings.filterwarnings("ignore")
+
+#
+
+df = pd.read_csv("WA_Fn-UseC_-HR-Employee-Attrition.csv")
+
+df.head()
+
+#
+df.isnull().sum()
+
+#
+df.shape
+
+#
+df.columns
+
+#
+df.info()
+
+#
+y_dict = {"Yes":1, "No":0}
+df["Attrition_numeric"] = df["Attrition"].map(y_dict)
+
+df.drop(['EmployeeCount','EmployeeNumber','Over18','StandardHours','Attrition'], axis = "columns", inplace = True)
+
+df.describe()
+
+#
+attrition_yes = df.loc[df["Attrition_numeric"] == 1]
+attrition_no = df.loc[df["Attrition_numeric"] == 0]
+
+#
+attrition_yes.describe()
+
+#
+attrition_no.describe()
+
+#
+colors = ["Red", "Blue"]
+
+df_class = df["Attrition_numeric"].value_counts().reset_index()
+df_class.columns = ["Attrition", "Frequency"]
+
+plt.figure(figsize=(6,3))
+ax = sns.barplot(
+    x="Attrition",
+    y="Frequency",
+    data=df_class,
+    palette=colors
+)
+
+plt.title("Attrition Frequency")
+plt.xlabel("Attrition")
+plt.ylabel("Frequency")
+
+# show values on bars
+for i, v in enumerate(df_class["Frequency"]):
+    ax.text(i, v, v, ha="center", va="bottom")
+
+sns.despine()
+plt.show()
+
+#
+sns.countplot(x="Department", hue="Attrition_numeric", data=df)
+plt.xticks(rotation=45)  # Makes labels vertical
+plt.show()
+
+#
+num_col = df.describe().columns.tolist()
+cat_col = df.describe(include="object").columns.tolist()
+corr = df[num_col].corr()
+
+#
+plt.figure(figsize=(6,4))
+sns.heatmap(corr, cmap="Blues")
+
+plt.title("Heatmap – Correlation between variables")
+
+plt.show()
+
+#
+corr["Attrition_numeric"].to_frame().style.background_gradient(cmap="Blues")
+
+#
+
+by_bussines = df.groupby("BusinessTravel")["Attrition_numeric"].value_counts(normalize=True).to_frame().unstack()
+
+by_bussines
+
+#
+plt.figure(figsize=(10, 6))
+sns.boxplot(y="MonthlyIncome",
+            x='Attrition_numeric',
+            data=df)
+
+#
+plt.figure(figsize=(8,6))
+sns.countplot(x='JobSatisfaction',
+              hue='Attrition_numeric',
+              data=df,
+              palette='coolwarm')
+
+plt.title('Job Satisfaction vs Attrition')
+plt.xlabel('Job Satisfaction (1=Low, 4=Very High)')
+plt.ylabel('Count')
+plt.show()
